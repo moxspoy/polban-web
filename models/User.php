@@ -2,103 +2,115 @@
 
 namespace app\models;
 
-class User extends \yii\base\BaseObject implements \yii\web\IdentityInterface
+/**
+ * This is the model class for table "user".
+ *
+ * @property int $id
+ * @property int $student_id
+ * @property string $username
+ * @property string $password
+ * @property string $password_salt
+ * @property string $fullname
+ * @property string $email
+ * @property int $role
+ * @property string|null $address
+ * @property string $phone_number
+ * @property int|null $generation
+ * @property string|null $date_of_birth
+ * @property int $gender
+ * @property string|null $photo_url
+ * @property int $faculty_id
+ * @property int $prodi_id
+ * @property int $status
+ * @property string $last_updated
+ * @property string $created_at
+ *
+ * @property Faculty $id0
+ * @property Prodi $id1
+ */
+class User extends \yii\db\ActiveRecord
 {
-    public $id;
-    public $username;
-    public $password;
-    public $authKey;
-    public $accessToken;
-
-    private static $users = [
-        '100' => [
-            'id' => '100',
-            'username' => 'admin',
-            'password' => 'admin',
-            'authKey' => 'test100key',
-            'accessToken' => '100-token',
-        ],
-        '101' => [
-            'id' => '101',
-            'username' => 'demo',
-            'password' => 'demo',
-            'authKey' => 'test101key',
-            'accessToken' => '101-token',
-        ],
-    ];
-
-
     /**
      * {@inheritdoc}
      */
-    public static function findIdentity($id)
+    public static function tableName()
     {
-        return isset(self::$users[$id]) ? new static(self::$users[$id]) : null;
+        return 'user';
     }
 
     /**
      * {@inheritdoc}
      */
-    public static function findIdentityByAccessToken($token, $type = null)
+    public function rules()
     {
-        foreach (self::$users as $user) {
-            if ($user['accessToken'] === $token) {
-                return new static($user);
-            }
-        }
-
-        return null;
+        return [
+            [['student_id', 'gender', 'faculty_id', 'prodi_id'], 'required'],
+            [['student_id', 'role', 'generation', 'gender', 'faculty_id', 'prodi_id', 'status'], 'integer'],
+            [['address', 'photo_url'], 'string'],
+            [['date_of_birth', 'last_updated', 'created_at'], 'safe'],
+            [['username'], 'string', 'max' => 100],
+            [['password', 'password_salt'], 'string', 'max' => 1000],
+            [['fullname', 'email'], 'string', 'max' => 255],
+            [['phone_number'], 'string', 'max' => 15],
+            [['id'], 'exist', 'skipOnError' => true, 'targetClass' => Faculty::className(), 'targetAttribute' => ['id' => 'id']],
+            [['id'], 'exist', 'skipOnError' => true, 'targetClass' => Prodi::className(), 'targetAttribute' => ['id' => 'id']],
+        ];
     }
 
     /**
-     * Finds user by username
+     * {@inheritdoc}
+     */
+    public function attributeLabels()
+    {
+        return [
+            'id' => 'ID',
+            'student_id' => 'Student ID',
+            'username' => 'Username',
+            'password' => 'Password',
+            'password_salt' => 'Password Salt',
+            'fullname' => 'Fullname',
+            'email' => 'Email',
+            'role' => 'Role',
+            'address' => 'Address',
+            'phone_number' => 'Phone Number',
+            'generation' => 'Generation',
+            'date_of_birth' => 'Date Of Birth',
+            'gender' => 'Gender',
+            'photo_url' => 'Photo Url',
+            'faculty_id' => 'Faculty ID',
+            'prodi_id' => 'Prodi ID',
+            'status' => 'Status',
+            'last_updated' => 'Last Updated',
+            'created_at' => 'Created At',
+        ];
+    }
+
+    /**
+     * Gets query for [[Id0]].
      *
-     * @param string $username
-     * @return static|null
+     * @return \yii\db\ActiveQuery|FacultyQuery
      */
-    public static function findByUsername($username)
+    public function getId0()
     {
-        foreach (self::$users as $user) {
-            if (strcasecmp($user['username'], $username) === 0) {
-                return new static($user);
-            }
-        }
-
-        return null;
+        return $this->hasOne(Faculty::className(), ['id' => 'id']);
     }
 
     /**
-     * {@inheritdoc}
-     */
-    public function getId()
-    {
-        return $this->id;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function getAuthKey()
-    {
-        return $this->authKey;
-    }
-
-    /**
-     * {@inheritdoc}
-     */
-    public function validateAuthKey($authKey)
-    {
-        return $this->authKey === $authKey;
-    }
-
-    /**
-     * Validates password
+     * Gets query for [[Id1]].
      *
-     * @param string $password password to validate
-     * @return bool if password provided is valid for current user
+     * @return \yii\db\ActiveQuery|ProdiQuery
      */
-    public function validatePassword($password)
+    public function getId1()
     {
-        return $this->password === $password;
+        return $this->hasOne(Prodi::className(), ['id' => 'id']);
+    }
+
+    /**
+     * {@inheritdoc}
+     * @return UserQuery the active query used by this AR class.
+     */
+    public static function find()
+    {
+        return new UserQuery(get_called_class());
     }
 }
