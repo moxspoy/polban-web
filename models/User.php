@@ -52,6 +52,7 @@ class User extends \yii\db\ActiveRecord
             [['password', 'password_salt'], 'string', 'max' => 1000],
             [['fullname', 'email'], 'string', 'max' => 255],
             [['phone_number'], 'string', 'max' => 15],
+            [['username', 'email', 'photo_url', 'password', 'password_salt', 'phone_number'], 'unique'],
             [['id'], 'exist', 'skipOnError' => true, 'targetClass' => Faculty::className(), 'targetAttribute' => ['id' => 'id']],
             [['id'], 'exist', 'skipOnError' => true, 'targetClass' => Prodi::className(), 'targetAttribute' => ['id' => 'id']],
         ];
