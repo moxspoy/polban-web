@@ -12,15 +12,11 @@ use yii\widgets\ActiveForm;
 
     <?php $form = ActiveForm::begin(); ?>
 
-    <?= $form->field($model, 'id')->textInput() ?>
-
     <?= $form->field($model, 'student_id')->textInput() ?>
 
     <?= $form->field($model, 'username')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'password')->passwordInput(['maxlength' => true]) ?>
-
-    <?= $form->field($model, 'password_salt')->textInput(['maxlength' => true]) ?>
 
     <?= $form->field($model, 'fullname')->textInput(['maxlength' => true]) ?>
 
@@ -45,10 +41,6 @@ use yii\widgets\ActiveForm;
     <?= $form->field($model, 'prodi_id')->textInput() ?>
 
     <?= $form->field($model, 'status')->textInput() ?>
-
-    <?= $form->field($model, 'last_updated')->textInput() ?>
-
-    <?= $form->field($model, 'created_at')->textInput() ?>
 
     <div class="form-group">
         <?= Html::submitButton('Save', ['class' => 'btn btn-success']) ?>
